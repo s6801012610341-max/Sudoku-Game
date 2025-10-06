@@ -1,0 +1,83 @@
+let board = [
+  [5,3,0, 0,7,0, 0,0,0],
+  [6,0,0, 1,9,5, 0,0,0],
+  [0,9,8, 0,0,0, 0,6,0],
+  [8,0,0, 0,6,0, 0,0,3],
+  [4,0,0, 8,0,3, 0,0,1],
+  [7,0,0, 0,2,0, 0,0,6],
+  [0,6,0, 0,0,0, 2,8,0],
+  [0,0,0, 4,1,9, 0,0,5],
+  [0,0,0, 0,8,0, 0,7,9]
+];
+let fixed = [];
+let sizeCell = 56;
+let r = -1, c = -1;
+let lines;
+
+function setup() {
+    createCanvas(600, 600);
+    smooth();
+    sizeCell = width / 9.0;
+    textAlign(CENTER, CENTER);
+    textSize(24);
+}
+
+function draw() {
+    background(255);
+    drawGrid();
+    highlightSelected();
+    drawNumbers();
+}
+
+function mousePressed() {
+    r = floor(mouseY / sizeCell);
+    c = floor(mouseX / sizeCell);
+}
+
+function keyPressed() {
+  if (r !== -1 && c !== -1 && !fixed[r][c]) {
+    if (keyCode === BACKSPACE || keyCode === DELETE || key === '0') {
+      board[r][c] = 0;
+    } else {
+      let val = int(key);
+      if (val >= 1 && val <= 9) {
+        if (board[r][c] === 0) {
+          if (checkValid(r, c, val)) {
+            board[r][c] = val;
+          } else {
+            console.log(`ใส่ไม่ได้ที่แถว ${r} ช่อง ${c}`);
+          }
+        }
+      }
+    }
+  }
+}
+
+function drawGrid() {
+  for (let i = 0; i <= 9; i++) {
+    stroke(i % 3 === 0 ? 50 : 180);
+    strokeWeight(i % 3 === 0 ? 3 : 1);
+    line(i * sizeCell, 0, i * sizeCell, height);
+    line(0, i * sizeCell, width, i * sizeCell);
+  }
+}
+
+function drawNumbers(){
+    fill(0);
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          if (board[i][j] !== 0) {
+            text(board[i][j], j * sizeCell + sizeCell / 2, i * sizeCell + sizeCell / 2);
+      }
+    }
+  }
+}
+
+function highlightSelected() {
+  if (r !== -1 && c !== -1) {
+    noFill();
+    stroke(255, 0, 0);
+    strokeWeight(3);
+    rect(c * sizeCell, r * sizeCell, sizeCell, sizeCell);
+  }
+}
