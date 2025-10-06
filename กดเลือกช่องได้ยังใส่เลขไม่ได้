@@ -35,8 +35,15 @@ function draw() {
   drawGrid();
   highlightSelected();
   drawNumbers();
-}
 
+ if (checkWin()) {
+      fill(0, 150, 0);
+      textSize(32);
+      textAlign(CENTER, CENTER);
+      text("You Win!", width / 2, height / 2);
+      noLoop();
+  }
+}
 function mousePressed() {
   r = floor(mouseY / sizeCell);
   c = floor(mouseX / sizeCell);
@@ -53,12 +60,44 @@ function keyPressed() {
           if (checkValid(r, c, val)) {
             board[r][c] = val;
           } else {
-            console.log(`❌ ใส่ไม่ได้ที่แถว ${r + 1} ช่อง ${c + 1}`);
+            console.log(` ใส่ไม่ได้ที่แถว ${r + 1} ช่อง ${c + 1}`);
           }
         }
       }
     }
   }
+}
+
+function checkValid(row, col, val) {
+  for (let i = 0; i < 9; i++) {
+    if (board[row][i] === val) return false;
+    if (board[i][col] === val) return false;
+  }
+
+  let startR = floor(row / 3) * 3;
+  let startC = floor(col / 3) * 3;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (board[startR + i][startC + j] === val) return false;
+    }
+  }
+  return true;
+}
+
+function checkWin() {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      let val = board[i][j];
+      if (val === 0) return false;
+      board[i][j] = 0;
+      if (!checkValid(i, j, val)) {
+        board[i][j] = val;
+        return false;
+      }
+      board[i][j] = val;
+    }
+  }
+  return true;
 }
 
 function drawGrid() {
@@ -88,18 +127,4 @@ function highlightSelected() {
     strokeWeight(3);
     rect(c * sizeCell, r * sizeCell, sizeCell, sizeCell);
   }
-}
-
-function checkValid(row, col, val) {
-  for (let j = 0; j < 9; j++) if (board[row][j] === val) return false;
-  for (let i = 0; i < 9; i++) if (board[i][col] === val) return false;
-
-  let startRow = floor(row / 3) * 3;
-  let startCol = floor(col / 3) * 3;
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (board[startRow + i][startCol + j] === val) return false;
-    }
-  }
-  return true;
 }
