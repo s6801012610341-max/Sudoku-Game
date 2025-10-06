@@ -133,7 +133,7 @@ function drawNumbers() {
 
 function highlightSelected() {
   if (r !== -1 && c !== -1) {
-    noFill();
+    fill(255, 242, 225);
     stroke(255, 0, 0);
     strokeWeight(3);
     rect(c * sizeCell, r * sizeCell, sizeCell, sizeCell);
