@@ -12,26 +12,34 @@ let board = [
 let fixed = [];
 let sizeCell = 56;
 let r = -1, c = -1;
-let lines;
 
 function setup() {
-    createCanvas(600, 600);
-    smooth();
-    sizeCell = width / 9.0;
-    textAlign(CENTER, CENTER);
-    textSize(24);
+  createCanvas(600, 600);
+  sizeCell = width / 9;
+  textAlign(CENTER, CENTER);
+  textSize(24);
+
+  fixed = Array.from({ length: 9 }, () => Array(9).fill(false));
+
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j] !== 0) {
+        fixed[i][j] = true;
+      }
+    }
+  }
 }
 
 function draw() {
-    background(255);
-    drawGrid();
-    highlightSelected();
-    drawNumbers();
+  background(255);
+  drawGrid();
+  highlightSelected();
+  drawNumbers();
 }
 
 function mousePressed() {
-    r = floor(mouseY / sizeCell);
-    c = floor(mouseX / sizeCell);
+  r = floor(mouseY / sizeCell);
+  c = floor(mouseX / sizeCell);
 }
 
 function keyPressed() {
@@ -45,7 +53,7 @@ function keyPressed() {
           if (checkValid(r, c, val)) {
             board[r][c] = val;
           } else {
-            console.log(`ใส่ไม่ได้ที่แถว ${r} ช่อง ${c}`);
+            console.log(`❌ ใส่ไม่ได้ที่แถว ${r + 1} ช่อง ${c + 1}`);
           }
         }
       }
@@ -62,12 +70,12 @@ function drawGrid() {
   }
 }
 
-function drawNumbers(){
-    fill(0);
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-          if (board[i][j] !== 0) {
-            text(board[i][j], j * sizeCell + sizeCell / 2, i * sizeCell + sizeCell / 2);
+function drawNumbers() {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j] !== 0) {
+        fill(fixed[i][j] ? 0 : 100); // fixed = สีดำ, ที่ใส่เอง = สีเทา
+        text(board[i][j], j * sizeCell + sizeCell / 2, i * sizeCell + sizeCell / 2);
       }
     }
   }
@@ -80,4 +88,18 @@ function highlightSelected() {
     strokeWeight(3);
     rect(c * sizeCell, r * sizeCell, sizeCell, sizeCell);
   }
+}
+
+function checkValid(row, col, val) {
+  for (let j = 0; j < 9; j++) if (board[row][j] === val) return false;
+  for (let i = 0; i < 9; i++) if (board[i][col] === val) return false;
+
+  let startRow = floor(row / 3) * 3;
+  let startCol = floor(col / 3) * 3;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (board[startRow + i][startCol + j] === val) return false;
+    }
+  }
+  return true;
 }
