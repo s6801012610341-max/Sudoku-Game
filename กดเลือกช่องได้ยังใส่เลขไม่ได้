@@ -1,42 +1,25 @@
-let board = [
-  [5,3,0, 0,7,0, 0,0,0],
-  [6,0,0, 1,9,5, 0,0,0],
-  [0,9,8, 0,0,0, 0,6,0],
-  [8,0,0, 0,6,0, 0,0,3],
-  [4,0,0, 8,0,3, 0,0,1],
-  [7,0,0, 0,2,0, 0,0,6],
-  [0,6,0, 0,0,0, 2,8,0],
-  [0,0,0, 4,1,9, 0,0,5],
-  [0,0,0, 0,8,0, 0,7,9]
-];
+let board = [];
 let fixed = [];
 let sizeCell = 56;
 let r = -1, c = -1;
+let lines;
+
+function preload() {
+    lines = loadStrings("sudoku.txt");
+}
 
 function setup() {
-  createCanvas(600, 600);
-  sizeCell = width / 9;
-  textAlign(CENTER, CENTER);
-  textSize(24);
-
-  fixed = Array.from({ length: 9 }, () => Array(9).fill(false));
-
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      if (board[i][j] !== 0) {
-        fixed[i][j] = true;
-      }
-    }
-  }
+    createCanvas(9 * sizeCell, 9 * sizeCell);
+    parseBoard(lines);
 }
 
 function draw() {
-  background(255);
-  drawGrid();
-  highlightSelected();
-  drawNumbers();
+    background(255);
+    drawGrid();
+    highlightSelected();
+    drawNumbers();
 
- if (checkWin()) {
+  if (checkWin()) {
       fill(0, 150, 0);
       textSize(32);
       textAlign(CENTER, CENTER);
@@ -44,9 +27,10 @@ function draw() {
       noLoop();
   }
 }
+
 function mousePressed() {
-  r = floor(mouseY / sizeCell);
-  c = floor(mouseX / sizeCell);
+    r = floor(mouseY / sizeCell);
+    c = floor(mouseX / sizeCell);
 }
 
 function keyPressed() {
@@ -60,13 +44,34 @@ function keyPressed() {
           if (checkValid(r, c, val)) {
             board[r][c] = val;
           } else {
-            console.log(` ใส่ไม่ได้ที่แถว ${r + 1} ช่อง ${c + 1}`);
+            console.log(`ใส่ไม่ได้ที่แถว ${r} ช่อง ${c}`);
           }
         }
       }
     }
   }
 }
+
+
+function parseBoard(lines) {
+  board = Array.from({ length: 9 }, () => Array(9).fill(0));
+  fixed = Array.from({ length: 9 }, () => Array(9).fill(false));
+
+  let row = 0;
+  for (let i = 0; i < lines.length && row < 9; i++) {
+    let line = lines[i].trim();
+    if (line.length > 0) {
+      let nums = line.split(/\s+/);
+      for (let j = 0; j < 9; j++) {
+        let val = int(nums[j]);
+        board[row][j] = val;
+        if (val !== 0) fixed[row][j] = true;
+      }
+      row++;
+    }
+  }
+}
+
 
 function checkValid(row, col, val) {
   for (let i = 0; i < 9; i++) {
@@ -84,6 +89,7 @@ function checkValid(row, col, val) {
   return true;
 }
 
+
 function checkWin() {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
@@ -100,25 +106,30 @@ function checkWin() {
   return true;
 }
 
+
 function drawGrid() {
   for (let i = 0; i <= 9; i++) {
-    stroke(i % 3 === 0 ? 50 : 180);
     strokeWeight(i % 3 === 0 ? 3 : 1);
     line(i * sizeCell, 0, i * sizeCell, height);
     line(0, i * sizeCell, width, i * sizeCell);
   }
 }
 
+
 function drawNumbers() {
+  textAlign(CENTER, CENTER);
+  textSize(24);
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       if (board[i][j] !== 0) {
-        fill(fixed[i][j] ? 0 : 100); // fixed = สีดำ, ที่ใส่เอง = สีเทา
+        if (fixed[i][j]) fill(0);
+        else fill(50, 50, 200);
         text(board[i][j], j * sizeCell + sizeCell / 2, i * sizeCell + sizeCell / 2);
       }
     }
   }
 }
+
 
 function highlightSelected() {
   if (r !== -1 && c !== -1) {
