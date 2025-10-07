@@ -1,6 +1,6 @@
 let board = [];
 let fixed = [];
-let sizeCell = 56;
+let sizeCell;
 let r = -1, c = -1;
 let lines;
 
@@ -9,8 +9,9 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(9 * sizeCell, 9 * sizeCell);
+    createCanvas(600, 650);
     parseBoard(lines);
+   sizeCell = width / 9;
 }
 
 function draw() {
@@ -111,8 +112,8 @@ function drawGrid() {
   for (let i = 0; i <= 9; i++) {
     stroke(0,0,0);
     strokeWeight(i % 3 === 0 ? 3 : 1);
-    line(i * sizeCell, 0, i * sizeCell, height);
-    line(0, i * sizeCell, width, i * sizeCell);
+    line(i * sizeCell, 0, i * sizeCell, sizeCell*9);
+    line(0, i * sizeCell, sizeCell*9, i * sizeCell);
   }
 }
 
@@ -136,7 +137,7 @@ function drawNumbers() {
 
 
 function highlightSelected() {
-  if (r !== -1 && c !== -1) {
+  if (r !== -1 && c !== -1 && r < 9 && c < 9) {
     fill(255, 242, 225);
     stroke(255, 0, 0);
     strokeWeight(3);
