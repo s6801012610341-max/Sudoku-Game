@@ -44,7 +44,7 @@ function keyPressed() {
           if (checkValid(r, c, val)) {
             board[r][c] = val;
           } else {
-            console.log(`ใส่ไม่ได้ที่แถว ${r} ช่อง ${c}`);
+            console.log(`ใส่ไม่ได้ที่แถว ${r+1} ช่อง ${c+1}`);
           }
         }
       }
@@ -109,6 +109,7 @@ function checkWin() {
 
 function drawGrid() {
   for (let i = 0; i <= 9; i++) {
+    stroke(0,0,0);
     strokeWeight(i % 3 === 0 ? 3 : 1);
     line(i * sizeCell, 0, i * sizeCell, height);
     line(0, i * sizeCell, width, i * sizeCell);
@@ -119,11 +120,14 @@ function drawGrid() {
 function drawNumbers() {
   textAlign(CENTER, CENTER);
   textSize(24);
+  stroke(0,0,0);
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       if (board[i][j] !== 0) {
-        if (fixed[i][j]) fill(0);
-        else fill(50, 50, 200);
+        if (fixed[i][j]){
+          fill(0,0,0);
+          stroke(0,0,0);
+        }else fill(30, 144, 255);
         text(board[i][j], j * sizeCell + sizeCell / 2, i * sizeCell + sizeCell / 2);
       }
     }
