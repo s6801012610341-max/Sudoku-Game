@@ -3,6 +3,7 @@ let fixed = [];
 let sizeCell;
 let r = -1, c = -1;
 let lines;
+let message = "";
 
 function preload() {
     lines = loadStrings("sudoku.txt");
@@ -10,8 +11,8 @@ function preload() {
 
 function setup() {
     createCanvas(600, 650);
-    parseBoard(lines);
    sizeCell = width / 9;
+   startGame();
 }
 
 function draw() {
@@ -19,36 +20,72 @@ function draw() {
     drawGrid();
     highlightSelected();
     drawNumbers();
-
-  if (checkWin()) {
-      fill(0, 150, 0);
-      textSize(32);
+    drawMessage();
+  
+    if (checkWin()) {
+      fill(0, 255, 127);
+      textSize(50);
       textAlign(CENTER, CENTER);
-      text("You Win!", width / 2, height / 2);
+      text("You Win!", width / 2, 300);
       noLoop();
   }
 }
 
+
+function startGame() {
+  loadGame();
+  r = -1;
+  c = -1;
+  message = "";
+}
+
+function loadGame() {
+  board = [];
+  fixed = [];
+  for (let i = 0; i < 9; i++) {
+    let nums = lines[i].split(' ').map(n => int(n));
+    board[i] = [];
+    fixed[i] = [];
+    for (let j = 0; j < 9; j++) {
+      board[i][j] = nums[j];
+      fixed[i][j] = (nums[j] !== 0);
+    }
+  }
+}
+
 function mousePressed() {
-    r = floor(mouseY / sizeCell);
-    c = floor(mouseX / sizeCell);
+      let mx = mouseX;
+  let my = mouseY;
+    let rowS = floor(my / sizeCell);
+  let colS = floor(mx / sizeCell);
+  if (rowS >= 0 && rowS < 9 && colS >= 0 && colS < 9) {
+    r = rowS;
+    c = colS;
+  }
+}
+
+function drawMessage() {
+  if (message !== "") {
+    fill(138, 43, 226);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(message, width / 2, sizeCell * 9 + 25);
+  }
 }
 
 function keyPressed() {
-  if (r !== -1 && c !== -1 && !fixed[r][c]) {
-    if (keyCode === BACKSPACE || keyCode === DELETE || key === '0') {
-      board[r][c] = 0;
-    } else {
+ if (r !== -1 && c !== -1 && !fixed[r][c]) {
+    if (key >= '1' && key <= '9') {
       let val = int(key);
-      if (val >= 1 && val <= 9) {
-        if (board[r][c] === 0) {
-          if (checkValid(r, c, val)) {
-            board[r][c] = val;
-          } else {
-            console.log(`ใส่ไม่ได้ที่แถว ${r+1} ช่อง ${c+1}`);
-          }
-        }
+      if (checkValid(r, c, val)) {
+        board[r][c] = val;
+        message = "";
+      } else { //(`ใส่ไม่ได้ที่แถว ${r+1} ช่อง ${c+1}`);
+        message = `ใส่ไม่ได้ที่แถว ${val} ช่อง (${r + 1}, ${c + 1})`;
       }
+    } else if (keyCode === BACKSPACE || keyCode === DELETE || key === '0') {
+      board[r][c] = 0;
+      message = "";
     }
   }
 }
@@ -110,7 +147,7 @@ function checkWin() {
 
 function drawGrid() {
   for (let i = 0; i <= 9; i++) {
-    stroke(0,0,0);
+    stroke(136, 134, 130);
     strokeWeight(i % 3 === 0 ? 3 : 1);
     line(i * sizeCell, 0, i * sizeCell, sizeCell*9);
     line(0, i * sizeCell, sizeCell*9, i * sizeCell);
@@ -138,9 +175,10 @@ function drawNumbers() {
 
 function highlightSelected() {
   if (r !== -1 && c !== -1 && r < 9 && c < 9) {
-    fill(255, 242, 225);
-    stroke(255, 0, 0);
+    fill(240, 255, 255);
+    stroke(65, 105, 225);
     strokeWeight(3);
     rect(c * sizeCell, r * sizeCell, sizeCell, sizeCell);
   }
 }
+
